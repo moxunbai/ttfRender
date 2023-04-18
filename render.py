@@ -93,7 +93,7 @@ def getContourPoints(fs,coords):
 
 
 # @ti.func
-def line_Bresenham(p0,p1,bitmap_field):
+def line_Bresenham_0(p0,p1,bitmap_field):
     p0,p1=ti.math.round(p0),ti.math.round(p1)
     v= p1-p0
     print(v)
@@ -132,6 +132,32 @@ def line_Bresenham(p0,p1,bitmap_field):
                 x+=1    
 
 
+# @ti.func
+def line_Bresenham(p0,p1,bitmap_field):
+    p0,p1=ti.math.round(p0),ti.math.round(p1)
+    v= p1-p0
+    dx = v[0]
+    dy = v[1]
+    dmx = dx
+    dmy = dy
+    m= ti.abs(dy/dx)
+    xi = p0[0]
+    yi = p0[1]
+    if m>=1:
+       dmx = dy
+       dmy = dx 
+    pi = 2*dmy - dmx
+    while yi!=p1[1]+1:
+        if pi <0:
+            pi = pi+2*dmy
+        else:
+            pi = pi +2*dmy-2*dmx
+            # yi += 1
+            xi += 1
+        bitmap_field[xi,yi]=1  
+        # xi +=1
+        yi +=1
+
 def parse_contours(glyf_word):
     con_start=0
     for i in range(glyf_word.numberOfContours):
@@ -151,7 +177,15 @@ win_w=600
 win_h=600
 gui = ti.GUI('Hello World!', (win_w,win_h)) 
 frame_np = np.zeros(shape=(win_w,win_h),dtype=np.float32)
-line_Bresenham(vec2(0,0),vec2(30,600),frame_np)
+frame_np_t = np.zeros(shape=(win_w,win_h,3),dtype=np.float32)
+line_Bresenham(vec2(0,0),vec2(300,599),frame_np)
+
+for i in range(win_w):
+        for j in range(win_h):
+            if i>30 and i<400 and i==j:
+               frame_np_t[i,j]=[1,1,1]     
+# X = np.random.random((5, 2))
+# Y = np.random.random((5, 2))
 while gui.running:
     # for i in range(len(coord)):
     #     c=coord[i]
@@ -162,13 +196,14 @@ while gui.running:
     #         if x>1 or y>1:
     #             print(pos)
     #         gui.circle(pos)
-    for i in range(win_w):
-        for j in range(win_h):
-            if(frame_np[i,j]==1):
-                #  print('llllllllllll',i,j)
-                 x,y = i/win_w,j/win_h
-                #  pos = [x+0.5,y+0.5]
-                 pos = [x ,y ]
-                 gui.circle(pos,color=16777215, radius=2)
-    # gui.set_image(frame_np)
+    # for i in range(win_w):
+    #     for j in range(win_h):
+    #         if(frame_np[i,j]==1):
+    #             #  print('llllllllllll',i,j)
+    #              x,y = i/win_w,j/win_h
+    #             #  pos = [x+0.5,y+0.5]
+    #              pos = [x ,y ]
+    #              gui.circle(pos,color=16777215, radius=1)
+    gui.set_image(frame_np_t)
+    # gui.lines(begin=X, end=Y, radius=1, color=0x068587)
     gui.show()

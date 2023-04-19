@@ -1,5 +1,16 @@
+'''
+Author: wulong@yushu.biz wulong@yushu.biz
+Date: 2023-04-19 20:55:29
+LastEditors: wulong@yushu.biz wulong@yushu.biz
+LastEditTime: 2023-04-19 22:52:43
+FilePath: \ttfRender\testPath.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
 from path import Edge,Point 
-
+from scan_path import fill_path,Blitter
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
+import numpy as np
 
 p1 = Point(1,2)
 p2 = Point(2,4)
@@ -18,86 +29,11 @@ e4.setLine(p4,p5)
 
 edges_list = [e1,e2,e3,e4]
 
-def blitH(x,y,w):
-    print('draw s Line ',x,y,w)
-
-def sort_edges():
-    edges_list.sort()
-    l = len(edges_list)
-    for i in range(1,l+1) :
-        if i< len(edges_list):
-            edges_list[i - 1].fNext = edges_list[i]
-            edges_list[i].fPrev = edges_list[i - 1]
-    return edges_list[0],edges_list[l-1]
-
-def remove_edge(edge) :
-    edge.fPrev.fNext = edge.fNext
-    edge.fNext.fPrev = edge.fPrev
-
-def walk_edges(prevHead,  start_y, stop_y):
-    print('walk_edges')
-    curr_y = start_y
-    windingMask = 1
-
-    while(True):
-        w = 0
-        # left SK_INIT_TO_AVOID_WARNING;
-        currE = prevHead.fNext
-        prevX = prevHead.fX
-
-        while (currE.fUpperY <= curr_y) :
-            x = currE.fX
-            if ((w & windingMask) == 0) :
-                left = x
-        
-            w += currE.fWinding
-            if ((w & windingMask) == 0) :
-                 width = x - left
-                 if (width > 0) :
-                    blitH(left, curr_y, width)
-            next = currE.fNext
-            newX = 0.0   
-
-            if (currE.fLowerY == curr_y) :
-                 
-                remove_edge(currE)
-            else : 
-                newX = currE.fX + currE.fDX
-                currE.fX = newX
-             
-            currE = next   
-
-        if ((w & windingMask) != 0) :
-            width = rightClip - left;
-            if (width > 0) :
-               blitH(left, curr_y, width);
-              
-        curr_y += 1
-        if (curr_y >= stop_y):
-            break;
-         
-        insert_new_edges(currE, curr_y);         
-             
-
-    
-
-def fill_path():
-    edge,last = sort_edges()
-    headEdge, tailEdge=Edge(),Edge()
-    print('edges_list: ', edge.fUpperY, edge.fX)
-    headEdge.fPrev = None
-    headEdge.fNext = edge
-    headEdge.fUpperY=0
-    headEdge.fX =0
-    edge.fPrev =headEdge
-
-    last.fNext = tailEdge
-    tailEdge.fPrev = last
-    tailEdge.fUpperY = 1<<32
-
-    start_y = 0
-    stop_y = 100
-
-    walk_edges(headEdge,  start_y, stop_y)
-
-fill_path()
+frame = np.zeros([800,800,3])
+blitter = Blitter(frame)
+fill_path(blitter,edges_list)
+print('===============',frame.shape)
+plt.title('hahahha')
+plt.axis('off')
+plt.imshow(frame)
+plt.show()

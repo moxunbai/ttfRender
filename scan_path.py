@@ -12,7 +12,7 @@ class Blitter():
             self.frame[math.floor(y),i,0]=1
             self.frame[math.floor(y),i,1]=1
             self.frame[math.floor(y),i,2]=1
-        print('draw s Line ',x,y,w)
+        # print('draw s Line ',x,y,w)
 
 def sort_edges(edges_list):
     edges_list.sort()
@@ -102,8 +102,8 @@ def walk_edges(blitter,prevHead,  start_y, stop_y,rightClip):
             if (currE.fLowerY == curr_y) :
                 if (currE.fCurveCount > 0) :
                     print('fCurveCount > 0')
-                    # if (currE.updateQuadratic()) :
-                    #     newX = currE.fX
+                    if (currE.updateQuadratic()) :
+                        newX = currE.fX
                     
                 elif (currE.fCurveCount < 0) :
                     print('currE.fCurveCount < 0')

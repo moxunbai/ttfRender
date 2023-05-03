@@ -5,9 +5,9 @@ from dot6_util import float_to_dot6
 
 # 计算非零位数
 def CNZ(v):
-    print(v,bin(v))
+    # print(v,bin(v))
     c=0
-    x=v
+    x=int(v)
     while x>0:
         x=x>>1
         c+=1
@@ -17,16 +17,16 @@ def cheap_distance( dx,  dy):
     dx = abs(dx)
     dy = abs(dy)
     if (dx > dy):
-        dx += dy >> 1
+        dx += dy /2
     else:
-        dx = dy + (dx >> 1)
+        dx = dy + (dx/2)
     return dx
 
 
 def diff_to_shift( dx,  dy,  shiftAA = 2):
     
     dist = cheap_distance(float_to_dot6(dx), float_to_dot6(dy))
-    dist = (dist + (1 << 4)) >> (3 + shiftAA)
+    dist = (dist + (1 << 4)) / (2**(3 + shiftAA))
  
     return (CNZ(dist)) >> 1
 class Edge( object ):
@@ -111,8 +111,8 @@ class QuadraticEdge(Edge):
         print('setQuadraticWithoutUpdate',top == bot,x0,x1,x2,y0,y1,y2)
         if (top == bot):
             return 0
-        dx = ( x1*2 - x0 - x2) >> 2
-        dy = ( y1*2 - y0 - y2) >> 2
+        dx = ( x1*2 - x0 - x2) /4
+        dy = ( y1*2 - y0 - y2) /4
         
         shift = diff_to_shift(dx, dy, shift)
        
@@ -134,15 +134,15 @@ class QuadraticEdge(Edge):
         B = x1 - x0             
 
         self.fQx     = x0
-        self.fQDx    = B + (A* (1>> shift))     
-        self.fQDDx   = A *(1>> (shift - 1))
+        self.fQDx    = B + (A/ (2** shift))     
+        self.fQDDx   = A /(2**(shift - 1))
 
         A = (y0 - y1 - y1 + y2)/2 
         B = (y1 - y0)
 
         self.fQy     = (y0)
-        self.fQDy    = B + (A* (1>> shift)) 
-        self.fQDDy   = A *(1>> (shift - 1))
+        self.fQDy    = B + (A/ (2** shift)) 
+        self.fQDDy   = A /(2**(shift - 1))
 
         self.fQLastX = round(x2)
         self.fQLastY = round(y2)
@@ -161,9 +161,9 @@ class QuadraticEdge(Edge):
         while True:
             count -=1
             if (count > 0):
-                newx    = oldx + (dx *(1>> shift))
+                newx    = oldx + (dx /(2** shift))
                 dx    += self.fQDDx
-                newy    = oldy + (dy *(1>> shift))
+                newy    = oldy + (dy /(2** shift))
                 dy    += self.fQDDy
             
             else:

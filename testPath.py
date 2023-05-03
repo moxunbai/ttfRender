@@ -37,7 +37,7 @@ builder = EdgeBuilder(path)
 builder.buildEdges()
 edges_list=builder.edgeList
 for e in edges_list:
-    print('edge:',e.fUpperY,e.fLowerY,e.fX,e.fY)
+    print('edge:',e.fUpperY,e.fLowerY,e.fX,e.fY,e.fCurveCount)
 # edges_list = [e1,e2,e3,e4,e5]
 
 frame = np.zeros([800,800,3])

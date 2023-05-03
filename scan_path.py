@@ -1,4 +1,5 @@
-from path import Edge,Point 
+ 
+from edge import Edge
 import math
 
 class Blitter():
@@ -8,18 +9,21 @@ class Blitter():
 
     def blitH(self,x,y,w):
         for i in range(math.floor(x),math.ceil(x+w)):
-            self.frame[i,math.floor(x),0]=1
-            self.frame[i,math.floor(x),1]=1
-            self.frame[i,math.floor(x),2]=1
+            self.frame[math.floor(y),i,0]=1
+            self.frame[math.floor(y),i,1]=1
+            self.frame[math.floor(y),i,2]=1
         print('draw s Line ',x,y,w)
 
 def sort_edges(edges_list):
     edges_list.sort()
     l = len(edges_list)
+    if l<1:
+        return None,None
     for i in range(1,l+1) :
         if i< len(edges_list):
             edges_list[i - 1].fNext = edges_list[i]
             edges_list[i].fPrev = edges_list[i - 1]
+    print('length===',len(edges_list),l)
     return edges_list[0],edges_list[l-1]
 
 def backward_insert_start(prev,x):
@@ -72,10 +76,10 @@ def remove_edge(edge) :
 
 
 def walk_edges(blitter,prevHead,  start_y, stop_y,rightClip):
-    print('walk_edges')
+    print('walk_edges',start_y, stop_y)
     curr_y = start_y
     windingMask = 1
-
+    left=0
     while(True):
         w = 0
         # left SK_INIT_TO_AVOID_WARNING
@@ -96,7 +100,16 @@ def walk_edges(blitter,prevHead,  start_y, stop_y,rightClip):
             newX = 0.0   
 
             if (currE.fLowerY == curr_y) :
-                 
+                if (currE.fCurveCount > 0) :
+                    print('fCurveCount > 0')
+                    # if (currE.updateQuadratic()) :
+                    #     newX = currE.fX
+                    
+                elif (currE.fCurveCount < 0) :
+                    print('currE.fCurveCount < 0')
+                    # if (currE.updateCubic()) :
+                    #     newX = currE.fX
+                      
                 remove_edge(currE)
             else : 
                 newX = currE.fX + currE.fDX
@@ -114,14 +127,15 @@ def walk_edges(blitter,prevHead,  start_y, stop_y,rightClip):
             break
          
         insert_new_edges(currE, curr_y)         
-             
+    print('curr_y',curr_y)         
 
     
 
 def fill_path(blitter,edges_list):
     edge,last = sort_edges(edges_list)
+    if edge is None or last is None:
+        return
     headEdge, tailEdge=Edge(),Edge()
-    print('edges_list: ', edge.fUpperY, edge.fX)
     headEdge.fPrev = None
     headEdge.fNext = edge
     headEdge.fUpperY=0
@@ -133,6 +147,6 @@ def fill_path(blitter,edges_list):
     tailEdge.fUpperY = 1<<32
 
     start_y = 0
-    stop_y = 100
+    stop_y = 800
 
-    walk_edges(blitter,headEdge,  start_y, stop_y,100)
+    walk_edges(blitter,headEdge,  start_y, stop_y,0)

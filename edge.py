@@ -44,6 +44,7 @@ class Edge( object ):
         self.fUpperY = 0
         self.fLowerY = 0
         self.fWinding = 0
+        self.id=0
 
     def __lt__(self,other):
        valuea = self.fUpperY
@@ -106,16 +107,16 @@ class QuadraticEdge(Edge):
             y0, y2 = y2, y0
             winding = -1
 
-        top =  y0
-        bot = y2
+        top =  round(y0)
+        bot = round(y2)
         print('setQuadraticWithoutUpdate',top == bot,x0,x1,x2,y0,y1,y2)
         if (top == bot):
             return 0
         dx = ( x1*2 - x0 - x2) /4
         dy = ( y1*2 - y0 - y2) /4
         
-        shift = diff_to_shift(dx, dy, shift)
-       
+        # shift = diff_to_shift(dx, dy, shift)
+        shift=3
     
         if (shift == 0) :
             shift = 1
@@ -144,8 +145,9 @@ class QuadraticEdge(Edge):
         self.fQDy    = B + (A/ (2** shift)) 
         self.fQDDy   = A /(2**(shift - 1))
 
-        self.fQLastX = round(x2)
-        self.fQLastY = round(y2)
+        self.fQLastX = x2
+        self.fQLastY = y2
+        return True
         
     def updateQuadratic(self):
         success=0

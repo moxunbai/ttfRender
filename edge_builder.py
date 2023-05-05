@@ -61,10 +61,12 @@ def ChopQuadAtYExtrema(src,dst):
             return 1
         
         b = a if math.abs(a - b) < math.abs(b - c) else c
-    
-    dst[0].set(src[0].x, a)
-    dst[1].set(src[1].x, b)
-    dst[2].set(src[2].x, c)
+    dst.append(Point(src[0].x, a))
+    dst.append(Point(src[1].x, b))
+    dst.append(Point(src[2].x, c))
+    # dst[0].set(src[0].x, a)
+    # dst[1].set(src[1].x, b)
+    # dst[2].set(src[2].x, c)
     return 0
 
 class EdgeBuilder():
@@ -164,7 +166,7 @@ class EdgeBuilder():
         
         
     def handle_quad(self,pts):
-        monoX=[Point(),Point(),Point()]
+        monoX=[]
         for p in pts:
             print(p.x,p.y)
         n = ChopQuadAtYExtrema(pts, monoX)
@@ -175,8 +177,8 @@ class EdgeBuilder():
             self.addQuad(monoX[start:end])
         
     def addQuad(self,pts):
-        print('addQuad',len(pts))
+        print('addQuad',pts[0].x,pts[0].y,pts[1].x,pts[1].y,pts[2].x,pts[2].y)
         edge = QuadraticEdge()
         if edge.setQuadratic(pts):
-           print('Quad Edge',edge) 
+        #    print('Quad Edge',edge) 
            self.edgeList.append(edge) 

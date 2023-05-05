@@ -9,11 +9,21 @@ class Blitter():
 
     def blitH(self,x,y,w):
         for i in range(math.floor(x),math.ceil(x+w)):
-            self.frame[math.floor(y),i,0]=1
-            self.frame[math.floor(y),i,1]=1
-            self.frame[math.floor(y),i,2]=1
+            self.frame[round(y),i,0]=1
+            self.frame[round(y),i,1]=1
+            self.frame[round(y),i,2]=1
         # print('draw s Line ',x,y,w)
 
+def backward_insert_edge_based_on_x(edge) :
+    x = edge.fX;
+    prev = edge.fPrev;
+    while (prev.fPrev and prev.fX > x) :
+        prev = prev.fPrev;
+    
+    if (prev.fNext != edge) :
+        remove_edge(edge);
+        insert_edge_after(edge, prev)
+        
 def sort_edges(edges_list):
     edges_list.sort()
     l = len(edges_list)
@@ -85,41 +95,62 @@ def walk_edges(blitter,prevHead,  start_y, stop_y,rightClip):
         # left SK_INIT_TO_AVOID_WARNING
         currE = prevHead.fNext
         prevX = prevHead.fX
+        eids=[]
 
         while (currE.fUpperY <= curr_y) :
+            # print('currE',currE.id)
             x = currE.fX
             if ((w & windingMask) == 0) :
                 left = x
+                eids.append(currE.id)
         
             w += currE.fWinding
             if ((w & windingMask) == 0) :
                  width = x - left
                  if (width > 0) :
+                    print('blitH-00000:',eids)
+                    eids=[]
                     blitter.blitH(left, curr_y, width)
             next = currE.fNext
             newX = 0.0   
 
             if (currE.fLowerY == curr_y) :
+                updateCurve = False
                 if (currE.fCurveCount > 0) :
                     print('fCurveCount > 0')
                     if (currE.updateQuadratic()) :
                         newX = currE.fX
+                        updateCurve=True
                     
                 elif (currE.fCurveCount < 0) :
                     print('currE.fCurveCount < 0')
                     # if (currE.updateCubic()) :
                     #     newX = currE.fX
-                      
-                remove_edge(currE)
+                    #     updateCurve=True  
+                if updateCurve:
+                   if (newX < prevX) :
+                    backward_insert_edge_based_on_x(currE);
+                   else :
+                        prevX = newX
+                else:        
+                    remove_edge(currE)
             else : 
                 newX = currE.fX + currE.fDX
                 currE.fX = newX
+                if (newX < prevX) :
+                    backward_insert_edge_based_on_x(currE);
+                else :
+                    prevX = newX
+                
              
             currE = next   
+            eids.append(currE.id)
 
         if ((w & windingMask) != 0) :
             width = rightClip - left
             if (width > 0) :
+               print('blitH-111:',eids)
+               eids=[]
                blitter.blitH(left, curr_y, width)
               
         curr_y += 1

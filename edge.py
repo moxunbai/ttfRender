@@ -115,8 +115,8 @@ class QuadraticEdge(Edge):
         dx = ( x1*2 - x0 - x2) /4
         dy = ( y1*2 - y0 - y2) /4
         
-        # shift = diff_to_shift(dx, dy, shift)
-        shift=3
+        shift = diff_to_shift(dx, dy, shift)
+        # shift=3
     
         if (shift == 0) :
             shift = 1

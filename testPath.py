@@ -27,10 +27,10 @@ import numpy as np
 path = Path()
 path.moveTo(1,2)
 # path.lineTo(100,250)
-path.lineTo(300,250)
-path.quadTo(460,350,650,700)
+path.lineTo(300,150)
+path.quadTo(560,350,250,300)
 # path.lineTo(250,550)
-# path.lineTo(150,250)
+path.lineTo(150,250)
 # path.lineTo(50,120)
 
 builder = EdgeBuilder(path)
